@@ -1,0 +1,58 @@
+# ================================
+# MNIST Digit Recognition (ML)
+# ================================
+
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report
+import matplotlib.pyplot as plt
+
+# -------------------------------
+# Load CSV Dataset
+# -------------------------------
+train_data = pd.read_csv("mnist_train.csv")
+test_data = pd.read_csv("mnist_test.csv")
+
+# Separate features and labels
+X_train = train_data.drop("label", axis=1)
+y_train = train_data["label"]
+
+X_test = test_data.drop("label", axis=1)
+y_test = test_data["label"]
+
+# -------------------------------
+# Preprocessing
+# -------------------------------
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# -------------------------------
+# Train Model
+# -------------------------------
+model = LogisticRegression(max_iter=1000)
+model.fit(X_train_scaled, y_train)
+
+# -------------------------------
+# Evaluation
+# -------------------------------
+y_pred = model.predict(X_test_scaled)
+
+accuracy = accuracy_score(y_test, y_pred)
+print("Model Accuracy:", accuracy)
+
+print("\nClassification Report:\n")
+print(classification_report(y_test, y_pred))
+
+# -------------------------------
+# Test on a Sample Image
+# -------------------------------
+sample_index = 0
+sample_image = X_test.iloc[sample_index].values.reshape(28, 28)
+
+plt.imshow(sample_image, cmap="gray")
+plt.title(f"Predicted Digit: {y_pred[sample_index]}")
+plt.axis("off")
+plt.show()
